@@ -1,6 +1,25 @@
 import sqlite3
 import bcrypt
+from cryptography.fernet import Fernet 
 
+
+KEY_FILE = "key.key"
+
+
+def load_key():
+    """Load the encryption key from a file, or generate one if it doesn't exist."""
+    try:
+        with open(KEY_FILE, "rb") as file:
+            key = file.read()
+    except FileNotFoundError:
+        key = Fernet.generate_key()   # generate a valid key
+        with open(KEY_FILE, "wb") as file:
+            file.write(key)
+    return key
+
+# global Fernet object
+key = load_key()
+fernet = Fernet(key)
 
 
 def create_tables():
@@ -62,7 +81,9 @@ def add_password(website, username, password):
     
     conn = sqlite3.connect("password-manager.db")
     cursor = conn.cursor()
-    cursor.execute('''INSERT INTO passwords (website, username, password) VALUES (?,?,?)''',(website, username, password)
+    encrypted_password = fernet.encrypt(password.encode())
+
+    cursor.execute('''INSERT INTO passwords (website, username, password) VALUES (?,?,?)''',(website, username, encrypted_password.decode())
     )
     conn.commit()
     conn.close()
@@ -78,7 +99,13 @@ def get_password(website):
     conn.close()
     
     if record:
-        print(f"Website = {website}\n username: {record[0]}\n password: {record[1]}")
+        try:
+            decrypted_password = fernet.decrypt(record[1].encode()).decode()
+        except InvalidToken:
+            print("ERROR: Unable to decrypt password (bad key or corrupted data).")
+            return
+        
+        print(f"Website = {website}\n username: {record[0]}\n password: {decrypted_password}")
 
     else:
         print(f"No password found for {website}")
