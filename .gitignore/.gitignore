@@ -2,3 +2,5 @@ __pycache__/
 .venv/
 vault.dat
 *.pyc
+password-manager.db
+
