@@ -1,5 +1,7 @@
 import sqlite3
 import bcrypt
+import secrets
+import string
 from cryptography.fernet import Fernet 
 
 
@@ -125,7 +127,33 @@ def list_passwords():
             
     else:
         print("No Accounts")
-        
+
+def generate_password(length=14):
+    
+    characters = string.ascii_letters + string.digits + string.punctuation
+    password = ''.join(secrets.choice(characters) for i in range(length))
+    return password
+
+def search_password():
+    conn = sqlite3.connect("password-manager.db")
+    cursor = conn.cursor()
+    search_term = input("Enter website or username to search: ").lower()
+    cursor.execute("SELECT website, username FROM passwords")
+    results = cursor.fetchall()
+    conn.close()
+
+    matches = []
+    for website, username in results:
+        if (website and search_term in website.lower()) or (username and search_term in username.lower()):
+            matches.append((website, username))
+    
+    if matches:
+        print("\nMatching entries:")
+        for i, (website, username) in enumerate(matches, 1):
+            print(f"{i}. Website: {website} | Username: {username}")
+    else:
+        print("No matches found.")
+
 if __name__ == "__main__":
     
     print("Creating tables...")
@@ -141,14 +169,24 @@ if __name__ == "__main__":
         print("1. Add new password")
         print("2. Get a password")
         print("3. List all accounts")
-        print("4. Exit")
+        print("4. Search for a password")
+        print("5. Exit")
 
         choice = input("Option = ")
 
         if choice == "1":
             website = input("Website: ")
             username = input("Username: ")
-            password = input("Password: ")
+            gen_pass = input("Generate password? (y/n): ").strip().lower()
+            if gen_pass == 'y':
+                password = generate_password()
+                print(f"Generated Password: {password}")
+            else:
+                password = input("Password: ")
+                confirm_pass = input("Confirm Password: ")
+                if password != confirm_pass:
+                    print("Passwords do not match. Aborting.")
+                    continue
             add_password(website, username, password)
             
         elif choice == "2":
@@ -159,6 +197,9 @@ if __name__ == "__main__":
             list_passwords()
             
         elif choice == "4":
+            search_password()
+            
+        elif choice == "5":
             print("Exiting Password Manager.")
             break
         
