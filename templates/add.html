@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block content %}
+<h2>Add a New Password</h2>
+<form method="POST">
+  <label>Website:</label><input type="text" name="website" required><br>
+  <label>Username:</label><input type="text" name="username" required><br>
+  <label>Password:</label><input type="text" name="password" id="password" required>
+  <button type="button" onclick="generatePassword()">Generate</button><br>
+  <input type="submit" value="Save">
+</form>
+
+<script>
+function generatePassword() {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789!@#$%^&*()';
+  let pass = '';
+  for (let i = 0; i < 12; i++) pass += chars.charAt(Math.floor(Math.random() * chars.length));
+  document.getElementById('password').value = pass;
+}
+</script>
+{% endblock %}

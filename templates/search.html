@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Search{% endblock %}
+
+{% block content %}
+<h2>Search Passwords</h2>
+
+<form method="POST" class="mb-3">
+  <input type="text" name="term" placeholder="Enter website or username" class="form-control mb-2" required>
+  <button type="submit" class="btn btn-primary">Search</button>
+</form>
+
+{% if results is not none %}
+  {% if results %}
+  <table class="table table-striped mt-4">
+    <thead>
+      <tr>
+        <th>Website</th>
+        <th>Username</th>
+        <th>Password</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for site, user, pwd in results %}
+      <tr>
+        <td>{{ site }}</td>
+        <td>{{ user }}</td>
+        <td>{{ pwd }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="text-danger mt-3">No results found.</p>
+  {% endif %}
+{% endif %}
+{% endblock %}
+

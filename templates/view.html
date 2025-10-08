@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Saved Passwords{% endblock %}
+{% block content %}
+  <h2>Saved Passwords</h2>
+  <table>
+    <tr><th>Website</th><th>Username</th><th>Password</th></tr>
+    {% for site, user, pwd in passwords %}
+    <tr>
+      <td>{{ site }}</td>
+      <td>{{ user }}</td>
+      <td>
+        <input type="password" value="{{ pwd }}" id="pwd{{ loop.index }}" readonly>
+        <button onclick="togglePassword('pwd{{ loop.index }}')">👁️</button>
+      </td>
+    </tr>
+    {% endfor %}
+  </table>
+
+  <script>
+    function togglePassword(id) {
+      const field = document.getElementById(id);
+      field.type = field.type === 'password' ? 'text' : 'password';
+    }
+  </script>
+{% endblock %}
+

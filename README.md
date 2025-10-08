@@ -1,9 +1,14 @@
-# Password Manager
+# 🔐 Password Manager (Flask + Python)
+A secure password manager web app built with Flask, using Fernet encryption.
 
-Secure Python CLI Password Manager using AES-GCM and PBKDF2.
+### Features
+- AES-128 encryption for all stored passwords  
+- Password generator  
+- Search & filter functionality  
+- Modern dark UI (Flask + CSS)
 
-## Features
-- Store credentials securely
-- Master password protected
-- Add / get / list / delete entries
-- Generate strong passwords
+### How to Run
+```bash
+pip install flask cryptography
+python app.py
+
